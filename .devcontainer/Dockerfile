@@ -1,0 +1,47 @@
+# Dockerfile - образ з Claude Code для devcontainer і docker compose цього проєкту.
+# init-firewall.sh лежить поруч і копіюється в образ.
+
+ARG TZ=Europe/Kyiv
+ARG CLAUDE_CODE_VERSION=latest
+
+FROM node:22
+
+ARG TZ
+ARG CLAUDE_CODE_VERSION
+ENV TZ=$TZ
+
+# Утиліти для firewall, dev tools і non-root sudo
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bubblewrap \
+    socat \
+    iptables \
+    ipset \
+    sudo \
+    curl \
+    git \
+    zsh \
+    fzf \
+    vim \
+    less \
+    python3 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Non-root user node вже є у node:22 base. Додаємо sudo без пароля тільки для firewall script.
+RUN echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall \
+    && chmod 0440 /etc/sudoers.d/node-firewall
+
+# Init firewall script - копіюємо з build context (поряд з Dockerfile)
+COPY init-firewall.sh /usr/local/bin/init-firewall.sh
+RUN chmod +x /usr/local/bin/init-firewall.sh
+
+# Claude Code CLI - встановлюємо глобально через npm від root, бінарник доступний усім
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+
+# Готуємо каталоги під named volume-и, щоб non-root node мав права на запис
+# (свіжий named volume успадковує ownership із mount-point образу).
+RUN mkdir -p /home/node/.claude /commandhistory \
+    && chown -R node:node /home/node/.claude /commandhistory
+
+USER node
+WORKDIR /workspace

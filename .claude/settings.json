@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "default",
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(~/.ssh/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)"
+    ],
+    "allow": [
+      "Bash(npm test *)",
+      "Bash(git diff *)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(python3 ./*)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "denyRead": ["~/.ssh", "~/.aws", "./.env"]
+    },
+    "network": {
+      "allowedDomains": ["api.anthropic.com", "registry.npmjs.org", "github.com"]
+    },
+    "excludedCommands": ["docker compose *"]
+  }
+}
