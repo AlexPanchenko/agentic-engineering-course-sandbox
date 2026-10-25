@@ -10,12 +10,11 @@
   - `calculate_cost.py` — підрахунок токенів і вартості 1000 запитів для Sonnet 4.6.
 - `.devcontainer/`, `docker-compose.yml` — ізольований sandbox для Claude Code з firewall (`init-firewall.sh`).
 - `CLAUDE.md` — правила роботи агента в цьому репозиторії.
-- `scripts/` — допоміжні скрипти.
 
 ## Вимоги
 
 - змінна середовища `ANTHROPIC_API_KEY` (можна покласти в `.env`, який не комітиться);
-- для `calculate_cost.py`: Python 3 і `python-dotenv`;
+- для `calculate_cost.py`: Python 3 і `pip install -r requirements.txt`;
 - для sandbox: Docker (або VS Code з Dev Containers).
 
 ## Швидкий старт
